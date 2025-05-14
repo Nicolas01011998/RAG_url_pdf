@@ -83,6 +83,11 @@ ollama pull nomic-embed-text
 ollama pull gemma3:1b
 ```
 
+Models' list:
+```
+ollama list
+```
+
 ## Run script
 ```
 python rag_llm.py
