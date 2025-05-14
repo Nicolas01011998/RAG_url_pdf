@@ -1,0 +1,9 @@
+gradio 
+ollama 
+langchain 
+langchain-community 
+chromadb
+langchain_ollama
+pypdfium2
+pdfminer.six
+pypdf
