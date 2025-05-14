@@ -8,10 +8,10 @@ A Question Answering (QA) system in Italian based on Retrieval-Augmented Generat
 - 🌐 Content loading from URLs (`WebBaseLoader`)
 - ✂️ Automatic text splitting using `RecursiveCharacterTextSplitter`
 - 🧠 Semantic embeddings via `OllamaEmbeddings` (`nomic-embed-text` model)
-- 📦 Indexing and retrieval with `Chroma` vector store
+- 🛢️ Indexing and retrieval with `Chroma` vector store
 - 💬 Answer generation with a local LLM (`gemma3`)
-- 🧩 Metadata enhancement by extracting section titles from documents
-- 🌈 User interface built with [Gradio](https://gradio.app/)
+- 🗂️ Metadata enhancement by extracting section titles from documents
+- 🌐 User interface built with [Gradio](https://gradio.app/)
 
 ## How It Works
 
