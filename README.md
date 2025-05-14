@@ -66,6 +66,55 @@ Finally, install the necessary libraries using pip.
 pip install -r requirements.txt
 ```
 
+### 3. Ollama 
+Download and install Ollama on Linux
+```
+curl -fsSL https://ollama.com/install.sh | sh
+```
+
+Create a systemd service to start Ollama automatically on boot. Create the service file:
+```
+sudo nano /etc/systemd/system/ollama.service
+```
+
+And paste the following:
+```
+[Unit]
+Description=Ollama Service
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/ollama serve
+Restart=always
+User=YOUR_USERNAME
+WorkingDirectory=/home/YOUR_USERNAME
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+
+[Install]
+WantedBy=multi-user.target
+```
++ Replace YOUR_USERNAME with your Linux username (whoami)
++ Make sure /usr/local/bin/ollama is the correct path (which ollama to verify)
+
+Enable and start the service:
+```
+sudo systemctl daemon-reexec
+sudo systemctl daemon-reload
+sudo systemctl enable ollama
+sudo systemctl start ollama
+```
+
+Check the service status:
+```
+systemctl status ollama
+```
+
+Pull models:
+```
+ollama pull nomic-embed-text
+ollama pull gemma3:1b
+```
+
 ## Run script
 ```
 python rag_llm.py
