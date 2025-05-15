@@ -502,7 +502,7 @@ def load_pdf(pdf_path: str) -> List[Document]:
     
     # Primo tentativo con PyPDFium2Loader
     try:
-        logging.info(f"Caricamento PDF con PyPDFium2Loader: {pdf_path}")
+        logging.info(f"Load PDF with PyPDFium2Loader: {pdf_path}")
         docs = PyPDFium2Loader(pdf_path).load()
         if docs and any(doc.page_content.strip() for doc in docs):
             return enhance_document_metadata(docs)
@@ -511,7 +511,7 @@ def load_pdf(pdf_path: str) -> List[Document]:
     
     # Secondo tentativo con PDFMinerLoader
     try:
-        logging.info(f"Caricamento PDF con PDFMinerLoader: {pdf_path}")
+        logging.info(f"Load PDF with PDFMinerLoader: {pdf_path}")
         docs = PDFMinerLoader(pdf_path).load()
         if docs and any(doc.page_content.strip() for doc in docs):
             return enhance_document_metadata(docs)
@@ -520,7 +520,7 @@ def load_pdf(pdf_path: str) -> List[Document]:
     
     # Ultimo tentativo con PyPDFLoader
     try:
-        logging.info(f"Caricamento PDF con PyPDFLoader: {pdf_path}")
+        logging.info(f"Load PDF with PyPDFLoader: {pdf_path}")
         docs = PyPDFLoader(pdf_path).load()
         if docs and any(doc.page_content.strip() for doc in docs):
             return enhance_document_metadata(docs)
@@ -528,22 +528,22 @@ def load_pdf(pdf_path: str) -> List[Document]:
         errors.append(f"PyPDFLoader: {str(e)}")
     
     # Se tutti i loader falliscono, solleva un errore con dettagli
-    raise ValueError(f"Impossibile estrarre testo dal PDF.\nErrori:\n{'\n'.join(errors)}")
+    raise ValueError(f"Unable to extract text from PDF.\nErrors:\n{'\n'.join(errors)}")
 
 
 def load_url(url: str) -> List[Document]:
     """
     Carica il contenuto da un URL.
     """
-    logging.info(f"Caricamento URL: {url}")
+    logging.info(f"Load URL: {url}")
     try:
         docs = WebBaseLoader(url).load()
         # Controlla che ci sia contenuto valido
         if not docs or not any(doc.page_content.strip() for doc in docs):
-            raise ValueError("Contenuto URL vuoto o non valido")
+            raise ValueError("Empty or invalid URL content")
         return docs
     except Exception as e:
-        raise ValueError(f"Impossibile caricare l'URL: {e}")
+        raise ValueError(f"Unable to load URL: {e}")
 
 
 def create_vectorstore(url: Optional[str] = None, pdf_path: Optional[str] = None) -> Chroma:
@@ -559,7 +559,7 @@ def create_vectorstore(url: Optional[str] = None, pdf_path: Optional[str] = None
             url_docs = load_url(url)
             docs += url_docs
         except Exception as e:
-            error_messages.append(f"Errore URL: {str(e)}")
+            error_messages.append(f"URL Error: {str(e)}")
     
     # Carica da PDF, se presente
     if pdf_path:
@@ -567,11 +567,11 @@ def create_vectorstore(url: Optional[str] = None, pdf_path: Optional[str] = None
             pdf_docs = load_pdf(pdf_path)
             docs += pdf_docs
         except Exception as e:
-            error_messages.append(f"Errore PDF: {str(e)}")
+            error_messages.append(f"PDF Error: {str(e)}")
     
     # Se nessun documento è stato caricato, solleva errore
     if not docs:
-        raise ValueError(f"Impossibile creare il vectorstore:\n{'\n'.join(error_messages)}")
+        raise ValueError(f"Unable to create vectorstore:\n{'\n'.join(error_messages)}")
     
     # Divide i documenti in chunk
     splits = text_splitter.split_documents(docs)
@@ -590,19 +590,18 @@ def call_llm(question: str, context: str) -> str:
     Chiama il modello LLM con la domanda e il contesto.
     """
     prompt = f"""
-    Sei un assistente esperto in analisi di documenti di ogni tipo.
-    Rispondi in italiano alla seguente domanda basandoti esclusivamente sul contesto fornito.
-    Se la risposta non è presente nel contesto, dillo chiaramente.
+        You are an expert assistant specializing in document analysis of all types.
+        Answer the following question, using only the information in the provided context.
+        If the answer cannot be found in the context, clearly state this limitation.
+        Organize information clearly and appropriately based on the document type and question.
+        If the question concerns:
+        - data or statistics: report the exact values cited in the document
+        - concepts or descriptive topics: organize your response logically
+        - procedures or instructions: list the steps clearly
     
-    Organizza le informazioni in modo chiaro e strutturato in base al tipo di documento e domanda.
-    Se la domanda riguarda:
-    - dati o statistiche: riporta i valori esatti citati nel documento
-    - concetti o argomenti descrittivi: organizza la risposta in modo logico
-    - procedure o istruzioni: elenca i passaggi in modo chiaro
+    Question: {question}
     
-    Domanda: {question}
-    
-    Contesto:
+    Context:
     {context}
     """
     try:
@@ -619,7 +618,7 @@ def call_llm(question: str, context: str) -> str:
         )
         return resp['message']['content']
     except Exception as e:
-        return f"Errore nella generazione della risposta: {e}"
+        return f"Error in response generation: {e}"
 
 
 def save_uploaded_file(file_obj) -> str:
@@ -646,17 +645,17 @@ def rag_answer(
         has_pdf = bool(pdf_file and pdf_file.name)
         
         if not has_url and not has_pdf:
-            return "Errore: Fornisci almeno un URL valido o un file PDF.", vectorstore
+            return "Error: Provide at least one valid URL or PDF file.", vectorstore
         
         # Salva temporaneamente il PDF e verifica che sia valido
         pdf_path = None
         if has_pdf:
             if not pdf_file.name.lower().endswith('.pdf'):
-                return "Errore: Il file caricato non è un PDF valido.", vectorstore
+                return "Error: The uploaded file is not a valid PDF.", vectorstore
             
             pdf_path = save_uploaded_file(pdf_file)
             if os.path.getsize(pdf_path) > 50 * 1024 * 1024:
-                return "Errore: Il PDF supera la dimensione massima di 50MB.", vectorstore
+                return "Error: The PDF exceeds the maximum size of 50MB.", vectorstore
         
         # Determina se è necessario ricreare il vectorstore
         current_id = f"{url}_{pdf_path}"
@@ -675,7 +674,7 @@ def rag_answer(
         hits = retriever.invoke(search_query)
         
         if not hits:
-            return "Non ho trovato informazioni rilevanti per rispondere alla tua domanda.", vectorstore
+            return "I found no relevant information to answer your question.", vectorstore
         
         # Costruisce il contesto da passare al modello LLM
         context_parts = []
@@ -692,7 +691,7 @@ def rag_answer(
         return answer, vectorstore
     
     except Exception as e:
-        return f"Errore durante l'elaborazione: {str(e)}", vectorstore
+        return f"Error during processing: {str(e)}", vectorstore
 
 #
 # FUNZIONI PER IMAGE CAPTIONING
@@ -713,12 +712,12 @@ def process_image(image_path) -> Tuple[str, str]:
     Nota: image_path è già un percorso di file quando arriva da gr.Image(type="filepath")
     """
     if not image_path or not os.path.exists(image_path):
-        raise ValueError("Nessuna immagine caricata o percorso non valido")
+        raise ValueError("No image loaded or invalid path")
     
     # Controlla la dimensione del file
     file_size = os.path.getsize(image_path)
     if file_size > MAX_IMAGE_SIZE:
-        raise ValueError(f"L'immagine è troppo grande: {file_size/1024/1024:.1f}MB. Massimo consentito: 10MB")
+        raise ValueError(f"The image is too big: {file_size/1024/1024:.1f}MB. Max allowed: 10MB")
     
     # Verifica che sia un'immagine valida
     try:
@@ -726,7 +725,7 @@ def process_image(image_path) -> Tuple[str, str]:
         img_format = img.format.lower() if img.format else "unknown"
         return image_path, img_format
     except Exception as e:
-        raise ValueError(f"File non valido o formato non supportato: {e}")
+        raise ValueError(f"Invalided file or not supported format: {e}")
 
 def generate_caption(
     image_path: str,
@@ -740,7 +739,7 @@ def generate_caption(
     """
     try:
         if not image_path or not os.path.exists(image_path):
-            return "Errore: Carica un'immagine per generare una didascalia."
+            return "Error: Upload an image to generate a caption."
         
         # Processa l'immagine
         processed_path, img_format = process_image(image_path)
@@ -750,7 +749,7 @@ def generate_caption(
         
         # Prepara il prompt finale
         if not prompt_template or prompt_template.strip() == "":
-            prompt_template = "Descrivi in dettaglio cosa vedi in questa immagine."
+            prompt_template = "Describe in detail what you see in this image."
             
         # Chiamata alla API di Ollama con l'immagine
         response = ollama.chat(
@@ -772,7 +771,7 @@ def generate_caption(
         return response['message']['content']
         
     except Exception as e:
-        return f"Errore durante l'elaborazione dell'immagine: {str(e)}"
+        return f"Error during image's processing: {str(e)}"
 
 #
 # INTERFACCIA GRADIO CON SCHEDE MULTIPLE
@@ -785,7 +784,8 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Gemma3 Document & Image AI") as ap
     with gr.Tabs():
         # Prima scheda: RAG Web + PDF
         with gr.TabItem("🔍 Document QA"):
-            gr.Markdown("Inserisci un URL e/o carica un PDF, poi poni la tua domanda.")
+            gr.Markdown("First, upload a URL or a PDF file.")
+            gr.Markdown("Next, ask a question.")
             
             with gr.Row():
                 with gr.Column(scale=2):
@@ -794,37 +794,37 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Gemma3 Document & Image AI") as ap
                         placeholder="https://..."
                     )
                     pdf_input = gr.File(
-                        label="Carica un PDF", 
+                        label="Upload a PDF", 
                         file_types=[".pdf"]
                     )
                     question_input = gr.Textbox(
-                        label="Domanda", 
-                        placeholder="Cosa vorresti sapere?",
+                        label="Question", 
+                        placeholder="Question...",
                         lines=2
                     )
-                    submit_btn_rag = gr.Button("Chiedi", variant="primary")
+                    submit_btn_rag = gr.Button("Ask", variant="primary")
                     
                 with gr.Column(scale=3):
                     output_rag = gr.Textbox(
-                        label="Risposta", 
+                        label="Answer", 
                         interactive=False, 
                         show_copy_button=True, 
                         lines=10
                     )
                     status_rag = gr.Textbox(
-                        label="Stato", 
+                        label="Status", 
                         interactive=False, 
                         visible=False
                     )
             
             gr.Examples(
                 examples=[
-                    ["https://it.wikipedia.org/wiki/Campionato_mondiale_di_calcio_2006", None, "Chi vinse i mondiali di calcio nel 2006?"],
-                    ["https://aws.amazon.com/it/what-is/anomaly-detection/", None, "Cos'è l'Anomaly Detection?"],
-                    ["https://it.wikipedia.org/wiki/Leonardo_da_Vinci", None, "Quali sono le opere più famose di Leonardo?"]
+                    ["https://it.wikipedia.org/wiki/Campionato_mondiale_di_calcio_2006", None, "Who won the World Cup in 2006?"],
+                    ["https://aws.amazon.com/it/what-is/anomaly-detection/", None, "What is Anomaly Detection?"],
+                    ["https://it.wikipedia.org/wiki/Leonardo_da_Vinci", None, "What are Leonardo's most famous works?"]
                 ],
                 inputs=[url_input, pdf_input, question_input],
-                label="Esempi di utilizzo"
+                label="Examples of use"
             )
             
             # Stato per il vectorstore
@@ -839,25 +839,25 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Gemma3 Document & Image AI") as ap
             )
             
             pdf_input.upload(
-                lambda: "PDF caricato. Pronto per l'elaborazione.",
+                lambda: "PDF uploaded. Ready for processing.",
                 outputs=status_rag
             )
             
         # Seconda scheda: Image Captioning
         with gr.TabItem("🖼️ Image Captioning"):
-            gr.Markdown('<h1 style="color: red">⚠️ ATTENZIONE: È NECESSARIA GPU E GEMMA3:4B ⚠️</h1>')
+            gr.Markdown('<h1 style="color: red">⚠️ ATTENTION: GPU AND GEMMA3:4B REQUIRED ⚠️</h1>')
             gr.Markdown("---")
-            gr.Markdown("Carica un'immagine e ottieni una descrizione dettagliata generata dal modello Gemma3.")
+            gr.Markdown("Upload an image and get a detailed description generated by the Gemma3 model.")
             
             with gr.Row():
                 with gr.Column(scale=1):
                     image_input = gr.Image(
                         type="filepath",
-                        label="Carica un'immagine",
+                        label="Upload an image",
                     )
                     prompt_input = gr.Textbox(
-                        label="Prompt personalizzato (opzionale)",
-                        placeholder="Descrivi in dettaglio cosa vedi in questa immagine.",
+                        label="Prompt (optional)",
+                        placeholder="Default: 'Describe in detail what you see in this image.'",
                         lines=2
                     )
                     '''temperature_slider = gr.Slider(
@@ -867,19 +867,16 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Gemma3 Document & Image AI") as ap
                         step=0.1, 
                         label="Temperatura"
                     )'''
-                    submit_btn_img = gr.Button("Genera Didascalia", variant="primary")
+                    submit_btn_img = gr.Button("Image Captioning", variant="primary")
                     
                 with gr.Column(scale=1):
                     output_img = gr.Textbox(
-                        label="Didascalia Generata", 
+                        label="Answear", 
                         interactive=False, 
                         show_copy_button=True, 
                         lines=10
                     )
-            
-            # Non possiamo utilizzare gli esempi predefiniti senza immagini di esempio reali
-            # Altrimenti dovresti includere le immagini di esempio nel progetto
-            
+
             submit_btn_img.click(
                 fn=generate_caption,
                 inputs=[image_input, prompt_input],

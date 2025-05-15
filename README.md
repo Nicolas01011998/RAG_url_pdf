@@ -26,7 +26,6 @@ A Question Answering (QA) system in Italian based on Retrieval-Augmented Generat
 
 - Only supports `.pdf` files smaller than 50MB  
 - Answers are based solely on the provided content (Web + PDF + Images) 
-- Questions must be asked in **Italian**  
 - The system clearly states when no relevant information is found in the context
 
 ## Project 
