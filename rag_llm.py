@@ -156,7 +156,7 @@ def load_url(url: str) -> List[Document]:
         # Controlla che ci sia contenuto valido
         if not docs or not any(doc.page_content.strip() for doc in docs):
             raise ValueError("Contenuto URL vuoto o non valido")
-        return doc<img src="Example.png" >s
+        return docs
     except Exception as e:
         raise ValueError(f"Impossibile caricare l'URL: {e}")
 
@@ -845,6 +845,8 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Gemma3 Document & Image AI") as ap
             
         # Seconda scheda: Image Captioning
         with gr.TabItem("🖼️ Image Captioning"):
+            gr.Markdown('<h1 style="color: red">⚠️ ATTENZIONE: È NECESSARIA GPU E GEMMA3:4B ⚠️</h1>')
+            gr.Markdown("---")
             gr.Markdown("Carica un'immagine e ottieni una descrizione dettagliata generata dal modello Gemma3.")
             
             with gr.Row():

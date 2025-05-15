@@ -81,7 +81,7 @@ systemctl status ollama
 Pull models:
 ```
 ollama pull nomic-embed-text
-ollama pull gemma3:1b
+ollama pull gemma3:0.6b
 ```
 
 Models' list:
