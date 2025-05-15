@@ -40,32 +40,74 @@ The project has the following structure:
 ```
 
 ## Environment
-### 1. Conda environment
-To run the script, it is first necessary to create a Conda environment with Python 3.12 and a virtual environment to install the required libraries.
-The Conda environment is used to set up the Python version.
-To create a Conda environment, run the following command:
-```
-sudo apt apt-get install tesseract-ocr tesseract-ocr-ita libmagic-dev poppler-utils
-conda create --name conda_python_3_12 python=3.12
-```
-To activate the Conda environment:
-```
-conda activate conda_python_3_12
-```
+### Conda environment
+To run the script, you first need to set up a Conda environment with Python 3.12 and install the required libraries.
+1. Download the Miniconda installer:
+   ```bash
+   wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    ```
+    If you have an ARM processor (e.g., Raspberry Pi 4), replace x86_64 with aarch64.
 
-### 2. Virtual environment
-After activating the Conda environment, it is necessary to create a virtual environment to install the required libraries.
-```
-python3 -m venv venv
-```
-Now, activate the virtual environment:
-```
-source venv/bin/activate
-```
-Finally, install the necessary libraries using pip.
-```
-pip install -r requirements.txt
-```
+2. Verify the checksum (optional but recommended):
+    ```bash
+    sha256sum Miniconda3-latest-Linux-*.sh
+    ```
+    Compare the output against the SHA-256 hash published on https://repo.anaconda.com/miniconda/.
+
+3. Run the installer:
+   ```bash
+   chmod +x Miniconda3-latest-Linux-*.sh
+   ./Miniconda3-latest-Linux-*.sh
+    ```
+    + Press Enter to scroll through the license, then type yes to accept.
+    + Choose the installation directory (default: ~/miniconda3).
+    + When prompted, type yes to run conda init and enable shell integration.
+
+4. Activate the changes:
+   ```bash
+   source ~/.bashrc
+    ```
+
+5. Install system dependencies (e.g., Tesseract, Poppler, libmagic):
+   ```bash
+   sudo apt-get update
+   sudo apt-get install -y \
+      tesseract-ocr \
+      tesseract-ocr-ita \
+      libmagic-dev \
+      poppler-utils
+    ```
+
+6. Create a Conda environment named `conda_python_3_12` with Python 3.12:
+   ```bash
+   conda create --name conda_python_3_12 python=3.12
+    ```
+
+7. Activate the environment:
+    ```bash
+    conda activate conda_python_3_12
+    ```
+
+8. Verify the Conda's installation:
+   ```bash
+   conda --version
+    ```
+    The output should be something like: conda 23.11.0
+
+9. Verify the `conda_python_3_12` installation:
+    ```bash
+   conda env list
+    ```
+
+10. Update Conda (optinal but recommended):
+    ```bash
+    conda update -n base -c defaults conda
+    ```
+
+11. Install the required libraries using pip.
+    ```bash
+    pip install -r requirements.txt
+    ```
 
 ### 3. Ollama 
 Download and install Ollama on Linux
