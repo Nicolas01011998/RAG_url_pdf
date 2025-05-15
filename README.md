@@ -1,6 +1,6 @@
 # RAG Web+PDF QA
 
-A Question Answering (QA) system in Italian based on Retrieval-Augmented Generation (RAG). It can answer user queries by leveraging content from **PDF documents** and/or **web URLs**.
+A Question Answering (QA) system in Italian based on Retrieval-Augmented Generation (RAG). It can answer user queries by leveraging content from PDF documents, web URLs, and even images.
 
 ## Features
 
@@ -12,19 +12,20 @@ A Question Answering (QA) system in Italian based on Retrieval-Augmented Generat
 - 💬 Answer generation with a local LLM (`gemma3`)
 - 🗂️ Metadata enhancement by extracting section titles from documents
 - 🌐 User interface built with [Gradio](https://gradio.app/)
+- 🖼️ Image captioning support for extracting textual descriptions from images
 
 ## How It Works
 
-- **Input**: The user provides a URL and/or a PDF file  
+- **Input**: The user provides a URL, PDF file, and/or image
 - **Extraction**: The content is cleaned, split, and converted into embeddings  
 - **Indexing**: The text chunks are stored in a Chroma vectorstore  
-- **Retrieval**: The system selects the most relevant documents for the question  
+- **Retrieval**: The system selects the most relevant documents or image captions for the question  
 - **LLM**: A contextual answer is generated using the `gemma3` model
 
 ## Notes
 
 - Only supports `.pdf` files smaller than 50MB  
-- Answers are based solely on the provided content (Web + PDF)  
+- Answers are based solely on the provided content (Web + PDF + Images) 
 - Questions must be asked in **Italian**  
 - The system clearly states when no relevant information is found in the context
 
@@ -95,6 +96,5 @@ python rag_llm.py
 
 ## Example of Visualization 
 
-This figure shows an example of the second pipeline is when object detection was performed only for the classes: book, potted plant, and vase.
-
 <img src="Example.png" >
+<img src="Example_2.png" >
