@@ -110,8 +110,8 @@ ollama serve &
 Pull models:
 ```
 ollama pull nomic-embed-text
-ollama pull qwen3:0.6b
-ollama pull gemma3:4b                       # requires GPU
+ollama pull gemma3:0.6b
+ollama pull gemma3:4b
 ```
 
 Models' list:
