@@ -22,7 +22,7 @@ CHUNK_SIZE = 1000
 CHUNK_OVERLAP = 200
 EMBED_MODEL = "nomic-embed-text:latest"
 LLM_MODEL = "qwen3:0.6b"
-VLM_MODEL = "gemma3:latest"
+VLM_MODEL = "gemma3:4b"
 MAX_IMAGE_SIZE = 10 * 1024 * 1024  # 10MB
 
 # Text splitter initialization
