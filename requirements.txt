@@ -1,5 +1,5 @@
 gradio 
-ollama 
+requests
 langchain 
 langchain-community 
 chromadb

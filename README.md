@@ -38,36 +38,39 @@ The project has the following structure:
 
 ```
 
+## Repository
+Clone the repo: `git clone git@github.com:Nicolas01011998/RAG_url_pdf.git`
+
 ## Environment
 ### Conda environment
 To run the script, you first need to set up a Conda environment with Python 3.12 and install the required libraries.
+If you already use Python 3.12 you can also use `venv`
 1. Download the Miniconda installer:
    ```bash
-   wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+   curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh 
     ```
     If you have an ARM processor (e.g., Raspberry Pi 4), replace x86_64 with aarch64.
 
-2. Verify the checksum (optional but recommended):
-    ```bash
-    sha256sum Miniconda3-latest-Linux-*.sh
-    ```
-    Compare the output against the SHA-256 hash published on https://repo.anaconda.com/miniconda/.
-
-3. Run the installer:
+2. Run the installer:
    ```bash
-   chmod +x Miniconda3-latest-Linux-*.sh
-   ./Miniconda3-latest-Linux-*.sh
+   bash Miniconda3-latest-Linux-x86_64.sh
     ```
     + Press Enter to scroll through the license, then type yes to accept.
     + Choose the installation directory (default: ~/miniconda3).
     + When prompted, type yes to run conda init and enable shell integration.
 
-4. Activate the changes:
+4. Activate the changes and check conda version:
    ```bash
    source ~/.bashrc
     ```
 
-5. Install system dependencies (e.g., Tesseract, Poppler, libmagic):
+5. Verify the Conda's installation:
+   ```bash
+   conda --version
+    ```
+    The output should be something like: conda 24.11.0
+
+6. Install system dependencies (e.g., Tesseract, Poppler, libmagic):
    ```bash
    sudo apt-get update
    sudo apt-get install -y \
@@ -77,33 +80,23 @@ To run the script, you first need to set up a Conda environment with Python 3.12
       poppler-utils
     ```
 
-6. Create a Conda environment named `conda_python_3_12` with Python 3.12:
+7. Create a Conda environment named `conda_python_3_12` with Python 3.12:
    ```bash
    conda create --name conda_python_3_12 python=3.12
     ```
 
-7. Activate the environment:
+8. Activate the environment:
     ```bash
     conda activate conda_python_3_12
     ```
 
-8. Verify the Conda's installation:
-   ```bash
-   conda --version
-    ```
-    The output should be something like: conda 23.11.0
 
 9. Verify the `conda_python_3_12` installation:
     ```bash
    conda env list
     ```
 
-10. Update Conda (optinal but recommended):
-    ```bash
-    conda update -n base -c defaults conda
-    ```
-
-11. Install the required libraries using pip.
+10. Install the required libraries using pip.
     ```bash
     pip install -r requirements.txt
     ```
@@ -113,10 +106,14 @@ Download and install Ollama on Linux
 ```
 curl -fsSL https://ollama.com/install.sh | sh
 ```
-
-Check the service status:
+Disable Ollama Service:
 ```
-systemctl status ollama
+sudo systemctl disable --now ollama.service
+```
+
+Start Ollama in the background
+```
+ollama serve &
 ```
 
 Pull models:
@@ -139,3 +136,10 @@ python rag_llm.py
 
 <img src="Example.png" >
 <img src="Example_2.png" >
+
+## End of the lab
+Stop Ollama (to delete the models use `ollama rm model-name`)
+
+```bash
+pkill -f "ollama serve"
+```
