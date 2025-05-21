@@ -111,6 +111,7 @@ Pull models:
 ```
 ollama pull nomic-embed-text
 ollama pull gemma3:0.6b
+gemma3:4b                       # requires GPU
 ```
 
 Models' list:
