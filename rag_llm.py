@@ -368,46 +368,56 @@ def generate_caption(
     temperature: float = 0.3
 ) -> str:
     """
-    Generates a caption for the uploaded image using the Gemma3 model.
-    
-    Note: image_path is already a file path when it comes from gr.Image(type="filepath")
+    Generates a caption for the uploaded image using the Ollama REST API.
+    Uses the Gemma3 model and a base64-encoded image in the request payload.
     """
     try:
         if not image_path or not os.path.exists(image_path):
             return "Error: Upload an image to generate a caption."
         
-        # Processes the image
+        # Process and validate image
         processed_path, img_format = process_image(image_path)
         
-        # Encodes the image in base64
+        # Encode image to base64
         base64_image = encode_image_to_base64(processed_path)
         
-        # Prepares the final prompt
+        # Default prompt if none provided
         if not prompt_template or prompt_template.strip() == "":
             prompt_template = "Describe in detail what you see in this image."
-            
-        # Calls the Ollama API with the image
-        response = ollama.chat(
-            model=LLM_MODEL,
-            messages=[
+        
+        # Prepare JSON payload
+        url = "http://localhost:11434/api/chat"
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        }
+        data = {
+            "model": LLM_MODEL,
+            "messages": [
                 {
-                    "role": "user", 
+                    "role": "user",
                     "content": prompt_template,
                     "images": [base64_image]
                 }
             ],
-            options={
-                'temperature': temperature,
-                'top_p': 0.9,
-                'num_predict': 2048
-            }
-        )
-            
-        return response['message']['content']
-        
-    except Exception as e:
-        return f"Error during image's processing: {str(e)}"
+            "options": {
+                "temperature": temperature,
+                "top_p": 0.9,
+                "num_predict": 2048
+            },
+            "stream": False
+        }
 
+        # Send the request
+        response = requests.post(url, json=data, headers=headers)
+        
+        if response.status_code == 200:
+            return response.json().get("message", {}).get("content", "No response content found.")
+        else:
+            return f"Error {response.status_code}: {response.text}"
+
+    except Exception as e:
+        return f"Error during image processing or API call: {e}"
 #
 # GRADIO INTERFACE WITH MULTIPLE TABS
 #
