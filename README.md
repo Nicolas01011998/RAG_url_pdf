@@ -70,33 +70,24 @@ If you already use Python 3.12 you can also use `venv`
     ```
     The output should be something like: conda 24.11.0
 
-6. Install system dependencies (e.g., Tesseract, Poppler, libmagic):
-   ```bash
-   sudo apt-get update
-   sudo apt-get install -y \
-      tesseract-ocr \
-      tesseract-ocr-ita \
-      libmagic-dev \
-      poppler-utils
-    ```
 
-7. Create a Conda environment named `conda_python_3_12` with Python 3.12:
+6. Create a Conda environment named `conda_python_3_12` with Python 3.12:
    ```bash
    conda create --name conda_python_3_12 python=3.12
     ```
 
-8. Activate the environment:
+7. Activate the environment:
     ```bash
     conda activate conda_python_3_12
     ```
 
 
-9. Verify the `conda_python_3_12` installation:
+8. Verify the `conda_python_3_12` installation:
     ```bash
    conda env list
     ```
 
-10. Install the required libraries using pip.
+9. Install the required libraries using pip.
     ```bash
     pip install -r requirements.txt
     ```
