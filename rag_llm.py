@@ -12,6 +12,7 @@ from langchain_ollama import OllamaEmbeddings
 from langchain_community.vectorstores import Chroma
 from typing import Tuple, Optional, List, Dict, Any
 from langchain.schema import Document
+import requests
 
 # Logging configuration
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -21,6 +22,7 @@ CHUNK_SIZE = 1000
 CHUNK_OVERLAP = 200
 EMBED_MODEL = "nomic-embed-text:latest"
 LLM_MODEL = "qwen3:0.6b"
+VLM_MODEL = "gemma3:latest"
 MAX_IMAGE_SIZE = 10 * 1024 * 1024  # 10MB
 
 # Text splitter initialization
@@ -202,9 +204,6 @@ def create_vectorstore(url: Optional[str] = None, pdf_path: Optional[str] = None
     
     # Creates the Chroma vectorstore using embeddings
     return Chroma.from_documents(documents=splits, embedding=embeddings)
-
-
-import requests
 
 def call_llm(question: str, context: str) -> str:
     """
@@ -392,7 +391,7 @@ def generate_caption(
             "Accept": "application/json",
         }
         data = {
-            "model": LLM_MODEL,
+            "model": VLM_MODEL,
             "messages": [
                 {
                     "role": "user",
